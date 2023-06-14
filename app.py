@@ -1,13 +1,7 @@
-import torch
 from transformers import AutoModel, AutoTokenizer
 from langchain import HuggingFacePipeline
 
 model_path = "/Users/shaunxu/models/chatglm-6b-int4"
-load_type = torch.float16
-if torch.cuda.is_available():
-    device = torch.device(0)
-else:
-    device = torch.device('cpu')
 
 # model = HuggingFacePipeline.from_model_id(model_id=model_path,
 #             task="text-generation",
