@@ -1,59 +1,46 @@
+from dotenv import load_dotenv
+from langchain.chains import LLMChain
+from langchain.prompts.prompt import PromptTemplate
+import os
+from llms.chatlgm import ChatGLM
 from transformers import AutoModel, AutoTokenizer
-from langchain import HuggingFacePipeline
 
-model_path = "/root/huggingface/chatglm-6b"
+load_dotenv()
 
-# model = HuggingFacePipeline.from_model_id(model_id=model_path,
-#             task="text-generation",
-#             model_kwargs={
-#                           "torch_dtype" : load_type,
-#                           "low_cpu_mem_usage" : True,
-#                           "temperature": 0.2,
-#                           "max_length": 1000,
-#                           "device_map": "auto",
-#                           "repetition_penalty":1.1,
-#                           "trust_remote_code": True}
-#             )
+model_name_or_path = os.environ.get("MODEL_NAME_OR_PATH")
 
-tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
-model = AutoModel.from_pretrained(model_path, trust_remote_code=True).half().cuda()
-model = model.eval()
+def main():
+    llm = ChatGLM()
+    llm.load_model(model_name_or_path)
 
-prompt = "你好"
-print(f"Human: {prompt}")
+    template = """你是一个友好的人工智能机器人，正在和一个人类对话。
+你将会尽量详细且正确的回答人类提出的问题。如果你不知道如何回答，请说我不知道。
+这是人类提出的问题。
+{question}
+"""
+    prompt = PromptTemplate(
+        input_variables=["question"],
+        template=template
+    )
 
-response, _ = model.chat(tokenizer, prompt, history=[], max_length=500, temperature=0.2)
-print(f"AI: {response}")
+    chain = LLMChain(
+        llm=llm,
+        prompt=prompt,
+        verbose=True
+    )
 
-# from to_upper_llm import ToTupperLLM
-# from langchain.prompts import PromptTemplate
-# from langchain.chains import LLMChain
-# from langchain.agents import load_tools, initialize_agent, AgentType
-# from langchain import ConversationChain
+    response = chain.predict(question="请介绍一下北京这座城市。")
+    print(response)
+    
 
-# prompt = PromptTemplate(
-#     input_variables=["input"],
-#     template="I'm a human and I said \"{input}\"."
-# )
+if __name__ == "__main__":
+    main()
 
-# print(prompt.format(input="hello"))
+# tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, trust_remote_code=True)
+# model = AutoModel.from_pretrained(model_name_or_path, trust_remote_code=True).half().cuda()
+# model = model.eval()
 
-# llm = ToTupperLLM()
-
-# chain = ConversationChain(llm=llm, verbose=True)
-# output = chain.predict(input="hello")
-# print(output)
-# output = chain.predict(input="hello")
-# print(output)
-
-# tools = load_tools(["human", "llm-math"], llm=llm)
-# agent = initialize_agent(tools, llm, AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True)
-# agent.run("What's my friend Eric's surname?")
-
-# chain = LLMChain(llm=llm, prompt=prompt)
-# response = chain.run("hello")
-# print(response)
-
-# input = "This is a foobar thing"
-# output = llm(input)
-# print("🧑‍💼: " + input + "\n" + "🤖: " + output)
+# prompt = "你好"
+# print(f"Human: {prompt}")
+# response, _ = model.chat(tokenizer, prompt, history=[], max_length=500, temperature=0.1)
+# print(f"AI: {response}")
