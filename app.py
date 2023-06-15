@@ -1,7 +1,7 @@
 from transformers import AutoModel, AutoTokenizer
 from langchain import HuggingFacePipeline
 
-model_path = "/Users/shaunxu/models/chatglm-6b-int4"
+model_path = "/root/huggingface/chatglm-6b"
 
 # model = HuggingFacePipeline.from_model_id(model_id=model_path,
 #             task="text-generation",
@@ -15,8 +15,8 @@ model_path = "/Users/shaunxu/models/chatglm-6b-int4"
 #                           "trust_remote_code": True}
 #             )
 
-tokenizer = AutoTokenizer.from_pretrained("/Users/shaunxu/models/chatglm-6b-int4", trust_remote_code=True)
-model = AutoModel.from_pretrained("/Users/shaunxu/models/chatglm-6b-int4", trust_remote_code=True, ignore_mismatched_sizes=True).float()
+tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
+model = AutoModel.from_pretrained(model_path, trust_remote_code=True).half().cuda()
 model = model.eval()
 
 prompt = "你好"
