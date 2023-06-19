@@ -1,7 +1,8 @@
 from dotenv import load_dotenv
 import os
 import datetime
-from llms.chatlgm import ChatGLM
+from llms.chatglm import ChatGLM
+from llms.moss import Moss
 from langchain.prompts.prompt import PromptTemplate
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferWindowMemory
@@ -11,9 +12,12 @@ llm_model_name_or_path = os.environ.get("LLM_MODEL_NAME_OR_PATH")
 embedding_model_name_or_path = os.environ.get("EMBEDDING_MODEL_NAME_OR_PATH")
 vectorstore_persist_directory = os.environ.get("VECTORSTORE_PERSIST_DIRECTORY")
 
+def print_with_timeframe(message: str) -> None:
+    print(f"[{datetime.datetime.now()}] {message}")
+
 def chat(chain: ConversationChain, question: str) -> None:
     response = chain.predict(input=question)
-    print(f"[{datetime.datetime.now()}] 🤖: {response}")
+    print_with_timeframe(f"🤖: {response}")
 
 def main():
     prompt = PromptTemplate(
@@ -34,9 +38,13 @@ def main():
         input_variables=["history", "input"],
     )
 
-    llm = ChatGLM()
+    print_with_timeframe(f"Initializing LLM")
+    # llm = ChatGLM()
+    llm = Moss()
     llm.load_model(llm_model_name_or_path)
+    print_with_timeframe(f"LLM is ready. LLM={llm._llm_type}")
 
+    print_with_timeframe(f"Initializing chain with prompt")
     chain = ConversationChain(
         llm=llm,
         prompt=prompt,
@@ -44,11 +52,11 @@ def main():
         verbose=False
     )
 
+    print_with_timeframe(f"Ready")
     chat(chain, "你好")
     while True:
         question = input(f"[{datetime.datetime.now()}] 🧑‍💼: ")
         if question == "exit":
-            chat(chain, "再见")
             break
         elif question == "":
             continue

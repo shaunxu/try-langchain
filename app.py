@@ -4,7 +4,7 @@ from langchain.chains import LLMChain, ConversationChain, RetrievalQA
 from langchain.prompts.prompt import PromptTemplate
 from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory, ConversationSummaryBufferMemory
 import os
-from llms.chatlgm import ChatGLM
+from llms.chatglm import ChatGLM
 import time
 from typing import Union
 from langchain.vectorstores import Chroma

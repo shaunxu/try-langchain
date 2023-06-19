@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from langchain.chains import LLMChain, ConversationChain, RetrievalQA
 import os
-from llms.chatlgm import ChatGLM
+from llms.chatglm import ChatGLM
 from langchain.prompts.prompt import PromptTemplate
 import langchain
 

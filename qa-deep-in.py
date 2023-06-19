@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import os
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.chains import LLMChain
-from llms.chatlgm import ChatGLM
+from llms.chatglm import ChatGLM
 import langchain
 from langchain.prompts import PromptTemplate
 import datetime
