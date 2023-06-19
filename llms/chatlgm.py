@@ -24,7 +24,7 @@ class ChatGLM(LLM):
             self.tokenizer,
             prompt,
             history=self.history,
-            max_length=500,
+            max_length=10000,
             temperature=0.1
         )
         if stop is not None:
