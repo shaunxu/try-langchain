@@ -1,11 +1,15 @@
 from dotenv import load_dotenv
 import os
 import datetime
-from llms.chatglm import ChatGLM
-from llms.moss import Moss
 from langchain.prompts.prompt import PromptTemplate
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferWindowMemory
+from llms.chatglm import ChatGLM
+from llms.moss import Moss
+from llms.aquilachat import AquilaChat
+from llms.chinese_llama_alpaca import ChineseLlamaAlpaca
+from langchain import HuggingFacePipeline
+import torch
 
 load_dotenv()
 llm_model_name_or_path = os.environ.get("LLM_MODEL_NAME_OR_PATH")
@@ -38,10 +42,24 @@ def main():
         input_variables=["history", "input"],
     )
 
-    print_with_timeframe(f"Initializing LLM")
+    print_with_timeframe(f"Initializing LLM from {llm_model_name_or_path}")
     # llm = ChatGLM()
-    llm = Moss()
-    llm.load_model(llm_model_name_or_path)
+    # llm = Moss()
+    # llm = AquilaChat()
+    # llm = ChineseLlamaAlpaca()
+    # llm.load_model(llm_model_name_or_path)
+
+    llm = HuggingFacePipeline.from_model_id(model_id=llm_model_name_or_path,
+                                            task="text-generation",
+                                            model_kwargs={
+                                                "torch_dtype" : torch.float16,
+                                                "low_cpu_mem_usage" : True,
+                                                "temperature": 0.2,
+                                                "max_length": 1000,
+                                                "device_map": "auto",
+                                                "repetition_penalty":1.1}
+    )
+
     print_with_timeframe(f"LLM is ready. LLM={llm._llm_type}")
 
     print_with_timeframe(f"Initializing chain with prompt")
